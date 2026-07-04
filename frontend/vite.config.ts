@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   server: {
+    // Dev proxy — routes /api to local FastAPI backend
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
@@ -19,3 +20,4 @@ export default defineConfig({
     },
   },
 })
+

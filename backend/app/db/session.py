@@ -16,16 +16,26 @@ settings = get_settings()
 
 # Engine configuration
 # - echo=True in debug mode for SQL query logging
-# - connect_args for SQLite WAL mode (better concurrent reads)
-_connect_args = {}
+# - SQLite needs check_same_thread=False
+# - PostgreSQL on Render needs SSL
+_connect_args: dict = {}
 if settings.DATABASE_URL.startswith("sqlite"):
     _connect_args = {"check_same_thread": False}
+elif settings.DATABASE_URL.startswith("postgresql"):
+    # asyncpg uses ssl keyword directly in connect_args
+    import ssl as _ssl
+    _ssl_ctx = _ssl.create_default_context()
+    _ssl_ctx.check_hostname = False
+    _ssl_ctx.verify_mode = _ssl.CERT_NONE
+    _connect_args = {"ssl": _ssl_ctx}
 
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
     connect_args=_connect_args,
-    pool_pre_ping=True,  # Verify connections before use
+    pool_pre_ping=True,   # Verify connections before use
+    pool_size=5,          # Render free tier connection limit
+    max_overflow=10,
 )
 
 AsyncSessionLocal = async_sessionmaker(
