@@ -43,7 +43,7 @@ class Notification(Base, UUIDMixin):
     metadata_json: Mapped[dict | None] = mapped_column("metadata", JSON, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: __import__("datetime").datetime.now(__import__("datetime").timezone.utc),
         nullable=False,
         index=True,
