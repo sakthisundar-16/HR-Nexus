@@ -21,8 +21,8 @@ export const attendanceApi = {
       params.end_date = `${year}-${m}-${String(lastDay).padStart(2, '0')}`
     }
     const res = await apiClient.get('/attendance/history', { params })
-    const data = unwrap<{ items: AttendanceRecord[]; total: number }>(res)
-    return data.items
+    const items = unwrap<AttendanceRecord[]>(res)
+    return items ?? []
   },
 
   async getEmployeeAttendance(employeeId: string, month?: string): Promise<AttendanceRecord[]> {
@@ -34,8 +34,8 @@ export const attendanceApi = {
       params.end_date = `${year}-${m}-${String(lastDay).padStart(2, '0')}`
     }
     const res = await apiClient.get(`/attendance/employee/${employeeId}`, { params })
-    const data = unwrap<{ items: AttendanceRecord[]; total: number }>(res)
-    return data.items
+    const items = unwrap<AttendanceRecord[]>(res)
+    return items ?? []
   },
 
   async getMySummary(month?: string): Promise<AttendanceSummary> {

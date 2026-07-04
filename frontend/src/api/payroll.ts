@@ -4,14 +4,18 @@ import type { PayrollRecord, PayrollGenerate } from '@/types'
 export const payrollApi = {
   async getMyPayroll(): Promise<PayrollRecord[]> {
     const res = await apiClient.get('/payroll/my-payslips')
-    const data = unwrap<{ items: PayrollRecord[]; total: number }>(res)
-    return data?.items ?? []
+    const items = unwrap<PayrollRecord[]>(res)
+    return items ?? []
   },
 
   async getAllPayroll(params?: { employee_id?: string; period?: string; status?: string; page?: number }): Promise<{ items: PayrollRecord[]; total: number }> {
     const res = await apiClient.get('/payroll', { params })
-    const data = unwrap<{ items: PayrollRecord[]; total: number }>(res)
-    return { items: data?.items ?? [], total: data?.total ?? 0 }
+    const items = unwrap<PayrollRecord[]>(res)
+    const meta = (res.data as { meta?: { total: number } })?.meta
+    return {
+      items: items ?? [],
+      total: meta?.total ?? (items ?? []).length,
+    }
   },
 
   async getById(id: string): Promise<PayrollRecord> {

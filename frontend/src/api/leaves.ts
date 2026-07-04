@@ -11,14 +11,18 @@ interface CreateLeaveRequest {
 export const leavesApi = {
   async getMyLeaves(): Promise<LeaveRequest[]> {
     const res = await apiClient.get('/leaves')
-    // The backend /leaves route returns a paginated response, so we unwrap it and take the items
-    const data = unwrap<{ items: LeaveRequest[]; total: number }>(res)
-    return data.items
+    const items = unwrap<LeaveRequest[]>(res)
+    return items ?? []
   },
 
   async getAllLeaves(params?: { status?: string; employee_id?: string; page?: number }): Promise<{ items: LeaveRequest[]; total: number }> {
     const res = await apiClient.get('/leaves', { params })
-    return unwrap<{ items: LeaveRequest[]; total: number }>(res)
+    const items = unwrap<LeaveRequest[]>(res)
+    const meta = (res.data as { meta?: { total: number } })?.meta
+    return {
+      items: items ?? [],
+      total: meta?.total ?? (items ?? []).length,
+    }
   },
 
   async createLeave(data: CreateLeaveRequest): Promise<LeaveRequest> {

@@ -12,8 +12,15 @@ interface PaginatedResponse<T> {
 export const employeesApi = {
   async getAll(params?: { page?: number; per_page?: number; search?: string; department_id?: string }): Promise<PaginatedResponse<Employee>> {
     const res = await apiClient.get('/employees', { params })
-    const data = unwrap<PaginatedResponse<Employee>>(res)
-    return data
+    const items = unwrap<Employee[]>(res)
+    const meta = (res.data as { meta?: { total: number; page: number; per_page: number; total_pages: number } })?.meta
+    return {
+      items: items ?? [],
+      total: meta?.total ?? (items ?? []).length,
+      page: meta?.page ?? 1,
+      per_page: meta?.per_page ?? 100,
+      total_pages: meta?.total_pages ?? 1,
+    }
   },
 
   async getById(id: string): Promise<Employee> {
