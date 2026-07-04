@@ -10,6 +10,8 @@ services:
     startCommand: python seed_db.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/v1/system/health
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
       - key: DATABASE_URL
         fromDatabase:
           name: hr-nexus-db
