@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_db, require_admin
+from app.api.deps import get_current_user, get_db, require_hr
 from app.core.response import success_response
 from app.models.user import User
 from app.schemas.auth import ChangePasswordRequest, LoginRequest, RefreshTokenRequest, TokenResponse
@@ -70,7 +70,7 @@ async def get_current_user_info(
 @router.post("/register", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def register_employee(
     data: EmployeeCreate,
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """

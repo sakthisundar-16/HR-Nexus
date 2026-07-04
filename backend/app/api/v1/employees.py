@@ -7,7 +7,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_employee, get_current_user, get_db, require_admin
+from app.api.deps import get_current_employee, get_current_user, get_db, require_hr
 from app.core.response import paginated_response, success_response
 from app.models.employee import Employee
 from app.models.user import User
@@ -77,7 +77,7 @@ async def get_employee(
 async def admin_update_employee(
     employee_id: uuid.UUID,
     data: EmployeeAdminUpdate,
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """

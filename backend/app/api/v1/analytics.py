@@ -9,7 +9,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, require_admin
+from app.api.deps import get_db, require_hr
 from app.core.response import success_response
 from app.models.user import User
 from app.services.analytics_service import AnalyticsService
@@ -20,7 +20,7 @@ router = APIRouter()
 
 @router.get("/dashboard", response_model=dict)
 async def get_admin_dashboard_stats(
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """
@@ -38,7 +38,7 @@ async def get_admin_dashboard_stats(
 
 @router.get("/department-distribution", response_model=dict)
 async def get_department_distribution_chart(
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Fetch headcount distribution across departments formatted for Pie / Bar charts."""
@@ -52,7 +52,7 @@ async def get_department_distribution_chart(
 
 @router.get("/leave-statistics", response_model=dict)
 async def get_leave_statistics_chart(
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Fetch leave request distribution by category formatted for Bar charts."""
@@ -66,7 +66,7 @@ async def get_leave_statistics_chart(
 
 @router.get("/monthly-trends", response_model=dict)
 async def get_monthly_trends_chart(
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Fetch multi-metric monthly trends (attendance %, payroll cost, headcount) for Area / Line charts."""
@@ -80,7 +80,7 @@ async def get_monthly_trends_chart(
 
 @router.get("/employee-growth", response_model=dict)
 async def get_employee_growth_chart(
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Fetch quarterly employee growth curve."""
@@ -94,7 +94,7 @@ async def get_employee_growth_chart(
 
 @router.get("/recent-activities", response_model=dict)
 async def get_recent_activities_feed(
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Fetch system-wide activity timeline and audit events for dashboard feed."""

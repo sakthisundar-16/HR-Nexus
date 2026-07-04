@@ -5,6 +5,7 @@ HR Nexus — Leave Management Router
 from typing import Annotated
 import uuid
 from fastapi import APIRouter, Depends, Query, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_employee, get_current_user, get_db, require_admin
@@ -37,18 +38,31 @@ async def submit_leave_request(
 
 @router.get("", response_model=dict)
 async def list_my_leaves(
-    current_emp: Annotated[Employee, Depends(get_current_employee)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
     status_filter: str | None = Query(None, alias="status"),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
 ):
-    """Fetch paginated leave requests for current employee."""
+    """Fetch paginated leave requests."""
     service = LeaveService(db)
     skip = (page - 1) * per_page
-    items, total = await service.repo.get_by_employee(
-        current_emp.id, status=status_filter, skip=skip, limit=per_page
-    )
+
+    if current_user.role in ["admin", "hr_manager"]:
+        items, total = await service.repo.get_all_leaves(
+            status=status_filter, skip=skip, limit=per_page
+        )
+    else:
+        # Directly query employee profile without calling the FastAPI dependency as a function
+        emp_result = await db.execute(select(Employee).where(Employee.user_id == current_user.id))
+        current_emp = emp_result.scalar_one_or_none()
+        if not current_emp:
+            items, total = [], 0
+        else:
+            items, total = await service.repo.get_by_employee(
+                current_emp.id, status=status_filter, skip=skip, limit=per_page
+            )
+
     return paginated_response(
         items=[LeaveRequestResponse.model_validate(i) for i in items],
         total=total,

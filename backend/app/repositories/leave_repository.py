@@ -96,6 +96,32 @@ class LeaveRepository(BaseRepository[LeaveRequest]):
 
         return list(items), total
 
+    async def get_all_leaves(
+        self,
+        status: str | None = None,
+        skip: int = 0,
+        limit: int = 20,
+    ) -> tuple[list[LeaveRequest], int]:
+        """Fetch paginated leave requests across all employees (Admin/HR only)."""
+        stmt = (
+            select(LeaveRequest)
+            .options(selectinload(LeaveRequest.employee), selectinload(LeaveRequest.reviewer))
+        )
+        count_stmt = select(func.count()).select_from(LeaveRequest)
+
+        if status:
+            stmt = stmt.where(LeaveRequest.status == status)
+            count_stmt = count_stmt.where(LeaveRequest.status == status)
+
+        total_res = await self.db.execute(count_stmt)
+        total = total_res.scalar() or 0
+
+        stmt = stmt.order_by(LeaveRequest.created_at.desc()).offset(skip).limit(limit)
+        items_res = await self.db.execute(stmt)
+        items = items_res.scalars().all()
+
+        return list(items), total
+
     async def count_used_days(self, employee_id: uuid.UUID, leave_type: str, year: int) -> int:
         """Count total approved leave days used by an employee for a specific leave type in a year."""
         start_of_year = date(year, 1, 1)

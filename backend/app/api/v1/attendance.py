@@ -8,7 +8,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_employee, get_current_user, get_db, require_admin
+from app.api.deps import get_current_employee, get_current_user, get_db, require_hr
 from app.core.response import paginated_response, success_response
 from app.models.employee import Employee
 from app.models.user import User
@@ -103,14 +103,14 @@ async def get_attendance_history(
 @router.get("/employee/{employee_id}", response_model=dict)
 async def get_employee_attendance(
     employee_id: uuid.UUID,
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
     start_date: date | None = Query(None),
     end_date: date | None = Query(None),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
 ):
-    """Fetch attendance history for any employee (Admin only)."""
+    """Fetch attendance history for any employee (Admin and HR Manager)."""
     service = AttendanceService(db)
     skip = (page - 1) * per_page
     items, total = await service.get_history(
@@ -127,11 +127,11 @@ async def get_employee_attendance(
 
 @router.get("/daily-report", response_model=dict)
 async def get_daily_report(
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
     report_date: date = Query(default_factory=date.today),
 ):
-    """Fetch system-wide attendance report for a specific date (Admin only)."""
+    """Fetch system-wide attendance report for a specific date (Admin and HR Manager)."""
     service = AttendanceService(db)
     items = await service.get_daily_report(report_date)
     return success_response(

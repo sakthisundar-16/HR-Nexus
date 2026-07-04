@@ -7,7 +7,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_db, require_admin
+from app.api.deps import get_current_user, get_db, require_hr
 from app.core.response import success_response
 from app.models.user import User
 from app.schemas.department import DepartmentCreate, DepartmentUpdate, DepartmentWithStatsResponse
@@ -44,10 +44,10 @@ async def get_department(
 @router.post("", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_department(
     data: DepartmentCreate,
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Create a new department (Admin only)."""
+    """Create a new department (Admin and HR Manager)."""
     service = DepartmentService(db)
     dept = await service.create(data)
     return success_response(
@@ -60,10 +60,10 @@ async def create_department(
 async def update_department(
     department_id: uuid.UUID,
     data: DepartmentUpdate,
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Update department properties (Admin only)."""
+    """Update department properties (Admin and HR Manager)."""
     service = DepartmentService(db)
     dept = await service.update(department_id, data)
     return success_response(
@@ -75,11 +75,11 @@ async def update_department(
 @router.delete("/{department_id}", response_model=dict)
 async def delete_department(
     department_id: uuid.UUID,
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """
-    Delete a department (Admin only).
+    Delete a department (Admin and HR Manager).
     Fails safely if the department still contains active employees.
     """
     service = DepartmentService(db)

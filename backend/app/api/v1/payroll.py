@@ -7,7 +7,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_employee, get_current_user, get_db, require_admin
+from app.api.deps import get_current_employee, get_current_user, get_db, require_hr
 from app.core.response import paginated_response, success_response
 from app.models.employee import Employee
 from app.models.user import User
@@ -20,11 +20,11 @@ router = APIRouter()
 @router.post("/generate", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def generate_payroll(
     request: PayrollGenerateRequest,
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """
-    Generate monthly payroll for an employee (Admin only).
+    Generate monthly payroll for an employee (Admin and HR Manager).
     Automatically links with attendance records to compute present/absent days
     and applies pro-rata salary deductions for unauthorized absences.
     """
@@ -38,14 +38,14 @@ async def generate_payroll(
 
 @router.get("", response_model=dict)
 async def list_all_payrolls(
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
     period: str | None = Query(None, pattern=r"^\d{4}-\d{2}$", description="Filter by YYYY-MM"),
     status_filter: str | None = Query(None, alias="status"),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
 ):
-    """Fetch paginated payroll records across all employees (Admin only)."""
+    """Fetch paginated payroll records across all employees (Admin and HR Manager)."""
     service = PayrollService(db)
     skip = (page - 1) * per_page
     items, total = await service.get_all_paginated(
@@ -101,11 +101,11 @@ async def get_payslip_detail(
 async def process_payroll(
     payroll_id: uuid.UUID,
     request: PayrollProcessRequest,
-    admin_user: Annotated[User, Depends(require_admin)],
+    admin_user: Annotated[User, Depends(require_hr)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """
-    Transition payroll status: DRAFT → PROCESSED → PAID (Admin only).
+    Transition payroll status: DRAFT → PROCESSED → PAID (Admin and HR Manager).
     When PAID, automatically emits in-app notification to the employee.
     """
     service = PayrollService(db)
