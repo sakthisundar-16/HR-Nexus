@@ -71,6 +71,8 @@ async def create_tables():
     import app.models  # noqa: F401
 
     async with engine.begin() as conn:
+        # Temporarily drop all tables to clear out the incorrect timezone schema
+        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
 
