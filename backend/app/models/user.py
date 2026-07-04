@@ -36,9 +36,9 @@ class User(Base, UUIDMixin, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     # Login tracking
-    last_login: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    last_login: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    locked_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     employee = relationship("Employee", back_populates="user", uselist=False, lazy="selectin")

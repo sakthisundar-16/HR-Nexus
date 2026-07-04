@@ -60,7 +60,7 @@ class LeaveRequest(Base, UUIDMixin, TimestampMixin):
     )
 
     admin_remarks: Mapped[str | None] = mapped_column(Text, nullable=True)
-    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     employee = relationship("Employee", back_populates="leave_requests", lazy="selectin")

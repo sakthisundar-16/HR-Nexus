@@ -46,8 +46,8 @@ class Attendance(Base, UUIDMixin, TimestampMixin):
     )
     date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
 
-    check_in: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    check_out: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    check_in: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    check_out: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Computed on check-out
     total_hours: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
