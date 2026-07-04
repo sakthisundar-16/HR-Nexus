@@ -10,7 +10,7 @@ Provides the base class for all ORM models with:
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import MetaData, String, Uuid
+from sqlalchemy import MetaData, String, Uuid, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -31,8 +31,10 @@ class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=convention)
 
     # Use Uuid for UUID storage (automatically coerces to string for SQLite)
+    # Use DateTime(timezone=True) for all datetime columns (fixes asyncpg offset errors)
     type_annotation_map = {
         uuid.UUID: Uuid(as_uuid=True),
+        datetime: DateTime(timezone=True),
     }
 
 
