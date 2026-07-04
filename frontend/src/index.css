@@ -2,10 +2,49 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Night Pumpkind';
-  src: url('/fonts/NightPumpkind-1GpGv.ttf') format('truetype'),
-       url('/fonts/NightPumpkind-nRORO.otf') format('opentype');
+  font-family: 'Zodiak';
+  src: url('/fonts/Zodiak-Regular.woff2') format('woff2');
   font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Zodiak';
+  src: url('/fonts/Zodiak-Italic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Zodiak';
+  src: url('/fonts/Zodiak-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Zodiak';
+  src: url('/fonts/Zodiak-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Zodiak';
+  src: url('/fonts/Zodiak-Extrabold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Zodiak';
+  src: url('/fonts/Zodiak-Thin.woff2') format('woff2');
+  font-weight: 100;
   font-style: normal;
   font-display: swap;
 }
@@ -37,7 +76,7 @@
   --color-olive-300: #827148;
   --color-olive-400: #655835;
 
-  --font-sans: "Night Pumpkind", Inter, system-ui, sans-serif;
+  --font-sans: "Zodiak", Inter, system-ui, sans-serif;
 
   --shadow-nexus: 0 4px 24px rgba(232,160,124,0.25);
   --shadow-nexus-lg: 0 12px 48px rgba(232,160,124,0.35);
@@ -115,7 +154,7 @@ html {
 }
 
 body {
-  font-family: 'Night Pumpkind', 'Inter', system-ui, sans-serif;
+  font-family: 'Zodiak', 'Inter', system-ui, sans-serif;
   background-color: var(--bg);
   color: var(--text-primary);
   min-height: 100vh;
