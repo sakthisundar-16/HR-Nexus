@@ -166,7 +166,7 @@ export default function SignIn() {
             <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3">Quick Login (Demo)</p>
             <div className="flex flex-col gap-2">
               {[
-                { role: 'Admin', email: 'admin@hrnexus.com', pwd: 'Admin@123456' },
+                { role: 'Admin', email: 'admin@hrnexus.com', pwd: 'nJgi0ITbrY9GMsNOFntdS8A5mOipPq/3o2aEYnclkEw=' },
                 { role: 'HR Manager', email: 'hr@hrnexus.com', pwd: 'Hr@123456' },
                 { role: 'Employee', email: 'alex.chen@hrnexus.com', pwd: 'Employee@123' },
               ].map(c => (
